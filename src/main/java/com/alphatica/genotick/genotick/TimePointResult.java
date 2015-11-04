@@ -2,7 +2,8 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSetName;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 class TimePointResult {
     private final Map<DataSetName, DataSetResult> dataSetResultMap;
@@ -17,7 +18,8 @@ class TimePointResult {
         return timePoint;
     }
 
-    public void addProgramResult(ProgramResult programResult, DataSetName name) {
+    public void addProgramResult(ProgramResult programResult) {
+        DataSetName name = programResult.getData().getName();
         DataSetResult dataSetResult = getDataSetResult(name);
         dataSetResult.addResult(programResult);
     }

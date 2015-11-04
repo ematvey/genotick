@@ -71,4 +71,9 @@ public class SimplePopulation implements Population {
             fs.saveProgram(program);
         }
     }
+
+    @Override
+    public ProgramName[] listProgramNames() {
+        return dao.listProgramNames();
+    }
 }

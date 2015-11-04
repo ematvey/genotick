@@ -21,11 +21,20 @@ public class Program implements Serializable {
 
     private int correctPredictions;
     private double inheritedWeight;
-    private final DecimalFormat weightFormat = new DecimalFormat("0.00");
+    private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
     private int totalOutcomes;
     private long outcomesAtLastChild;
     private int bias;
     private final int maximumDataOffset;
+    private boolean fromParents;
+
+    public void setFromParents() {
+        this.fromParents = true;
+    }
+
+    public boolean isFromParents() {
+        return fromParents;
+    }
 
     public static Program createEmptyProgram(int maximumDataOffset) {
         return new Program(maximumDataOffset);

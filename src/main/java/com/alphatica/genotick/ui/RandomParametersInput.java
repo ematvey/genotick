@@ -1,8 +1,8 @@
 package com.alphatica.genotick.ui;
 
+import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.MainSettings;
-import com.alphatica.genotick.genotick.TimePoint;
 
 import java.util.Random;
 
@@ -12,9 +12,10 @@ class RandomParametersInput implements UserInput {
 
     @Override
     public void show(Application application) {
-        MainSettings defaults = new MainSettings();
+        MainAppData data = application.createData(MainSettings.DEFAULT_DATA_DIR);
+        MainSettings defaults = MainSettings.getSettings(data.getFirstTimePoint(),data.getLastTimePoint());
         MainSettings appSettings = getSettings(defaults);
-        application.start(appSettings);
+        application.start(appSettings, data);
     }
 
     public MainSettings assignRandom(MainSettings settings) {
@@ -37,12 +38,9 @@ class RandomParametersInput implements UserInput {
         settings.randomProgramsAtEachUpdate = r.nextDouble();
         return settings;
     }
+
     private  MainSettings getSettings(MainSettings defaults) {
-        defaults.dataLoader = "data";
-        //defaults.populationDAO = "FileSystem";
         defaults.populationDAO = "RAM";
-        defaults.startTimePoint = new TimePoint(20000101);
-        defaults.endTimePoint = new TimePoint(20150101);
         defaults.requireSymmetricalPrograms = true;
         defaults.killNonPredictingPrograms = true;
         defaults.executionOnly = false;

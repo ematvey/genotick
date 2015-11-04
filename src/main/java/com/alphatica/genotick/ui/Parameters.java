@@ -10,21 +10,27 @@ public class Parameters {
     public Parameters(String[] args) {
         for(String arg: args) {
             String key = parseKey(arg);
-            String value = parseValue(key,arg);
+            String value = parseValue(arg);
             map.put(key,value);
         }
     }
 
-    private String parseValue(String key,String arg) {
-        int eqPos = key.length();
-        return arg.substring(eqPos+1,arg.length());
+    private String parseValue(String arg) {
+        int eqPos = arg.indexOf("=");
+        if(eqPos >= 0) {
+            return arg.substring(eqPos + 1, arg.length());
+        } else {
+            return arg;
+        }
     }
 
     private String parseKey(String arg) {
         int eqPos = arg.indexOf("=");
-        if(eqPos < 0)
-            throw new RuntimeException("Unable to parse " + arg + " as parameter. (Missing '=' sign).");
-        return arg.substring(0,eqPos);
+        if(eqPos >= 0) {
+            return arg.substring(0,eqPos);
+        } else {
+            return arg;
+        }
     }
 
     public String getValue(String key) {

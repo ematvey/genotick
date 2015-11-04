@@ -8,10 +8,9 @@ import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Program;
 import com.alphatica.genotick.population.ProgramName;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class SimpleEngine implements Engine {
@@ -23,6 +22,9 @@ public class SimpleEngine implements Engine {
     private MainAppData data;
 
     private SimpleEngine() {
+    }
+    public static Engine getEngine() {
+        return new SimpleEngine();
     }
 
     @Override
@@ -38,13 +40,10 @@ public class SimpleEngine implements Engine {
             Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             timePoint.increment();
         }
-        timePointExecutor.savePopulation("savedPopulation");
+        if(!engineSettings.executionOnly) {
+            population.savePopulation(getSavedPopulationDirName());
+        }
         return timePointStats;
-    }
-
-    private void initPopulation() {
-        if(population.getSize() == 0 && !engineSettings.executionOnly)
-            breeder.breedPopulation(population);
     }
 
     @Override
@@ -56,16 +55,27 @@ public class SimpleEngine implements Engine {
                             Population population) {
         this.engineSettings = engineSettings;
         this.timePointExecutor = timePointExecutor;
-        this.data = data;
         this.killer = killer;
         this.breeder = breeder;
         this.population = population;
+        this.data = data;
+    }
+
+    private String getSavedPopulationDirName() {
+        String prefix = "savedPopulation_";
+        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_kk_mm");
+        return prefix + format.format(Calendar.getInstance().getTime());
+    }
+
+    private void initPopulation() {
+        if(population.getSize() == 0 && !engineSettings.executionOnly)
+            breeder.breedPopulation(population);
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint) {
         Debug.d("Starting TimePoint:", timePoint);
         List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
-        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList);
+        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList, population);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
@@ -79,8 +89,35 @@ public class SimpleEngine implements Engine {
         }
         if(!engineSettings.executionOnly && !programDataList.isEmpty() && !timePointStats.isEmpty())
             updatePopulation(timePointResult);
+        printParentsVsRandomStats();
         Debug.d("Finished TimePoint:",timePoint);
         return timePointStats;
+    }
+
+    private void printParentsVsRandomStats() {
+        int fromParentsCount = 0;
+        int randomCount = 0;
+        double fromParentsWeight = 0.0;
+        double randomWeight = 0.0;
+
+        for(Program program: population.listPrograms()) {
+            if(program.isFromParents()) {
+                fromParentsCount++;
+                fromParentsWeight += Math.abs(program.getWeight());
+            } else {
+                randomCount++;
+                randomWeight += Math.abs(program.getWeight());
+            }
+        }
+        double ratio;
+        if(randomCount > 0) {
+            ratio = (double) fromParentsCount / (double) randomCount;
+            Debug.d("Ratio of programs from parents vs random:",ratio);
+        }
+        if(fromParentsCount > 0)
+            Debug.d("Average program-from-parents weight:",fromParentsWeight / fromParentsCount);
+        if(randomCount > 0)
+            Debug.d("Average random-program weight:",randomWeight / randomCount);
     }
 
     private void printPercentEarned(DataSetName name, Prediction prediction, Double actualChange) {
@@ -110,13 +147,11 @@ public class SimpleEngine implements Engine {
     private void updateProgramResults(Map<ProgramName, List<Outcome>> programResults) {
         if(programResults.isEmpty())
             return;
-        Debug.d("updateProgramResults");
         for(Map.Entry<ProgramName, List<Outcome>> entry: programResults.entrySet()) {
             Program program = population.getProgram(entry.getKey());
             program.recordOutcomes(entry.getValue());
             population.saveProgram(program);
         }
-        Debug.d("Finished updateProgramResults");
     }
 
     private void updateProgramPredictions(HashMap<ProgramName, List<Outcome>> programPredictions, DataSetResult dataSetResult,double actualChange) {
@@ -136,8 +171,4 @@ public class SimpleEngine implements Engine {
         return list;
     }
 
-
-    public static Engine getEngine() {
-        return new SimpleEngine();
-    }
 }

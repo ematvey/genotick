@@ -2,6 +2,7 @@ package com.alphatica.genotick.population;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
+import java.util.List;
 
 public class ProgramInfo {
     public static final Comparator<ProgramInfo> comparatorByAge = new AgeComparator();
@@ -57,5 +58,21 @@ public class ProgramInfo {
 
     public int getBias() {
         return bias;
+    }
+
+    private static double getTotalWeight(List<ProgramInfo> list) {
+        double weight = 0;
+        for(ProgramInfo programInfo: list) {
+            weight += Math.abs(programInfo.getWeight());
+        }
+        return weight;
+    }
+
+    public static double getAverageWeight(List<ProgramInfo> list) {
+        if(list.isEmpty()) {
+            return 0;
+        } else {
+            return getTotalWeight(list) / list.size();
+        }
     }
 }

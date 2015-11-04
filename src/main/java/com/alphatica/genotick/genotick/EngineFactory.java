@@ -7,8 +7,7 @@ import com.alphatica.genotick.population.Population;
 
 class EngineFactory {
     public static Engine getDefaultEngine(EngineSettings engineSettings,
-                                          TimePointExecutor timePointExecutor,
-                                          MainAppData data,
+                                          MainAppData data, TimePointExecutor timePointExecutor,
                                           ProgramKiller killer,
                                           ProgramBreeder breeder,
                                           Population population) {

@@ -1,11 +1,12 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.population.ProgramExecutor;
+
+import com.alphatica.genotick.population.ProgramExecutorSettings;
 
 class DataSetExecutorFactory {
-    public static DataSetExecutor getDefaultSetExecutor(ProgramExecutor e) {
+    public static DataSetExecutor getDefaultSetExecutor(ProgramExecutorSettings settings) {
         DataSetExecutor executor = new SimpleDataSetExecutor();
-        executor.setExecutor(e);
+        executor.setExecutorFactory(settings);
         return executor;
     }
 }

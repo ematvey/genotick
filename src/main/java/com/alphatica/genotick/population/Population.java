@@ -25,4 +25,6 @@ public interface Population {
     boolean haveSpaceToBreed();
 
     void savePopulation(String path);
+
+    ProgramName[] listProgramNames();
 }

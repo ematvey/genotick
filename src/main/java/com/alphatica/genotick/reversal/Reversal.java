@@ -1,4 +1,4 @@
-package com.alphatica.genotick.genotick.reversal;
+package com.alphatica.genotick.reversal;
 
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;

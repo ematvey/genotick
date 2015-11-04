@@ -65,7 +65,7 @@ public class FileSystemDataLoader implements DataLoader {
         String separator = ",";
         String[] fields = line.split(separator);
         List<Number> list = new ArrayList<>(fields.length);
-        list.add(Integer.valueOf(fields[0]));
+        list.add(Long.valueOf(fields[0]));
         for(int i = 1; i < fields.length; i++) {
             list.add(Double.valueOf(fields[i]));
         }

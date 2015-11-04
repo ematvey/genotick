@@ -13,7 +13,7 @@ public class LowestOfColumn extends RegRegInstruction implements Serializable {
     public LowestOfColumn() {
     }
 
-    public LowestOfColumn(LowestOfColumn lowestOfColumn) {
+    private LowestOfColumn(LowestOfColumn lowestOfColumn) {
         this.setRegister1(lowestOfColumn.getRegister1());
         this.setRegister2(lowestOfColumn.getRegister2());
     }

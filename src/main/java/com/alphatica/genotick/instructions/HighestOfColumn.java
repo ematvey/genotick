@@ -14,7 +14,7 @@ public class HighestOfColumn extends RegRegInstruction implements Serializable {
 
     }
 
-    public HighestOfColumn(HighestOfColumn highestOfColumn) {
+    private HighestOfColumn(HighestOfColumn highestOfColumn) {
         this.setRegister1(highestOfColumn.getRegister1());
         this.setRegister2(highestOfColumn.getRegister2());
     }

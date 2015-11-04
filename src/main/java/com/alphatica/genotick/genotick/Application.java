@@ -18,15 +18,13 @@ import com.alphatica.genotick.ui.UserOutput;
 import java.util.List;
 
 public class Application {
-    public static final Debug Logger = new Debug();
     private final UserOutput output;
 
     public Application(UserOutput output) {
         this.output = output;
     }
 
-    public void start(MainSettings settings) {
-        setupLogger();
+    public void start(MainSettings settings, MainAppData data) {
         if(!validateSettings(settings))
             return;
         logSettings(settings);
@@ -34,9 +32,14 @@ public class Application {
         Mutator mutator = getMutator(settings);
         ProgramBreeder breeder = wireProgramBreeder(settings, mutator);
         Population population = wirePopulation(settings);
-        Engine engine = wireEngine(settings, killer, breeder, population);
+        Engine engine = wireEngine(settings, data, killer, breeder, population);
         List<TimePointStats> results = engine.start();
         showSummary(results);
+    }
+
+    public MainAppData createData(String dataSettings) {
+        DataLoader dataLoader = DataFactory.getDefaultLoader(dataSettings);
+        return dataLoader.createProgramData();
     }
 
     private boolean validateSettings(MainSettings settings) {
@@ -50,17 +53,16 @@ public class Application {
     }
 
 
-    private Engine wireEngine(MainSettings settings, ProgramKiller killer,
+    private Engine wireEngine(MainSettings settings, MainAppData data, ProgramKiller killer,
                               ProgramBreeder breeder, Population population) {
         EngineSettings engineSettings = getEngineSettings(settings);
-        MainAppData data = createData(settings);
-        TimePointExecutor timePointExecutor = wireTimePointExecutor(settings, population);
-        return EngineFactory.getDefaultEngine(engineSettings, timePointExecutor, data, killer, breeder, population);
+        TimePointExecutor timePointExecutor = wireTimePointExecutor(settings);
+        return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
     }
 
-    private TimePointExecutor wireTimePointExecutor(MainSettings settings, Population population) {
+    private TimePointExecutor wireTimePointExecutor(MainSettings settings) {
         DataSetExecutor dataSetExecutor = wireDataSetExecutor(settings);
-        return TimePointExecutorFactory.getDefaultExecutor(population, dataSetExecutor);
+        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor);
     }
 
     private Population wirePopulation(MainSettings settings) {
@@ -73,8 +75,7 @@ public class Application {
     private DataSetExecutor wireDataSetExecutor(MainSettings settings) {
         ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings();
         programExecutorSettings.instructionLimit = settings.processorInstructionLimit;
-        ProgramExecutor programExecutor = ProgramExecutorFactory.getDefaultProgramExecutor(programExecutorSettings);
-        return DataSetExecutorFactory.getDefaultSetExecutor(programExecutor);
+        return DataSetExecutorFactory.getDefaultSetExecutor(programExecutorSettings);
     }
 
     private ProgramBreeder wireProgramBreeder(MainSettings settings, Mutator mutator) {
@@ -108,10 +109,6 @@ public class Application {
         return MutatorFactory.getDefaultMutator(mutatorSettings);
     }
 
-    private MainAppData createData(MainSettings settings) {
-        DataLoader dataLoader = DataFactory.getDefaultLoader(settings.dataLoader);
-        return dataLoader.createProgramData();
-    }
 
     private EngineSettings getEngineSettings(MainSettings settings) {
         EngineSettings engineSettings = new EngineSettings();
@@ -119,12 +116,6 @@ public class Application {
         engineSettings.endTimePoint = settings.endTimePoint;
         engineSettings.executionOnly = settings.executionOnly;
         return engineSettings;
-    }
-
-    @SuppressWarnings("AccessStaticViaInstance")
-    private void setupLogger() {
-        Logger.setShowTime(true);
-        Logger.toFile("genotick.out");
     }
 
     private void logSettings(MainSettings settings) {

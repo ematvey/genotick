@@ -7,13 +7,15 @@ class ProgramResult {
 
     private final Prediction prediction;
     private final ProgramName name;
+    private final ProgramData data;
     private final Double weight;
 
-    public ProgramResult(Prediction prediction, Program program) {
+    public ProgramResult(Prediction prediction, Program program, ProgramData data) {
 
         this.prediction = prediction;
         this.name = program.getName();
         this.weight = program.getWeight();
+        this.data = data;
     }
 
     @Override
@@ -31,5 +33,9 @@ class ProgramResult {
 
     public Double getWeight() {
         return weight;
+    }
+
+    public ProgramData getData() {
+        return data;
     }
 }

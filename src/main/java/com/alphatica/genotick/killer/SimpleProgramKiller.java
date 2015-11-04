@@ -29,7 +29,7 @@ class SimpleProgramKiller implements ProgramKiller{
         removeProtectedPrograms(population,list);
         killProgramsByWeight(population, list);
         killProgramsByAge(population, list);
-
+        Debug.d("Population average weight:",ProgramInfo.getAverageWeight(list));
     }
 
     private void killNonSymmetricalPrograms(Population population, List<ProgramInfo> list) {

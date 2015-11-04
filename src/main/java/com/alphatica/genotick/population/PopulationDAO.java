@@ -14,4 +14,5 @@ public interface PopulationDAO {
 
     void setSettings(String settings);
 
+    ProgramName[] listProgramNames();
 }

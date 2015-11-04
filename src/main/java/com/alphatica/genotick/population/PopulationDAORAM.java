@@ -61,4 +61,9 @@ public class PopulationDAORAM implements PopulationDAO {
     public void setSettings(String settings) {
         /* Empty, Ram dao doesn't need settings */
     }
+
+    @Override
+    public ProgramName[] listProgramNames() {
+        return map.keySet().toArray(new ProgramName[map.size()]);
+    }
 }

@@ -1,16 +1,15 @@
 package com.alphatica.genotick.ui;
 
-import com.alphatica.genotick.genotick.Application;
+import com.alphatica.genotick.genotick.Debug;
 
-@SuppressWarnings("AccessStaticViaInstance")
 class ConsoleOutput implements UserOutput {
     @Override
     public void errorMessage(String message) {
-        Application.Logger.d(message);
+        Debug.d("Error:",message);
     }
 
     @Override
     public void warningMessage(String message) {
-        Application.Logger.d(message);
+        Debug.d("Warning:",message);
     }
 }
